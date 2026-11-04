@@ -1,0 +1,15 @@
+/* Fonts from the Figma file, bundled so the extension works offline.
+   Jeju Gothic (the heading font) isn't available to bundle, so headings
+   fall back to Sofia Sans unless it's installed on the computer. */
+
+@font-face {
+  font-family: "Sofia Sans";
+  src: url("../fonts/SofiaSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Sofia Sans Semi Condensed";
+  src: url("../fonts/SofiaSansSemiCondensed-Regular.woff2") format("woff2");
+  font-weight: 400;
+}

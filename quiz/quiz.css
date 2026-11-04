@@ -1,0 +1,626 @@
+/* Laid out on the Figma frame size (1728 × 1117). quiz.js zooms the stage
+   to fit the browser window, so measurements here match Figma 1:1. */
+
+@import url("../styles/fonts.css");
+
+:root {
+  --text: #000000;
+  --text-muted: #554e4e;
+  --text-upcoming: #a5a5a5;
+  --line: #d9d9d9;
+  --box-bg: #f6f6f6;
+  --blue-bg: #c4e0e8;
+  --blue: #32a8cc;
+  --error: #d6453d;
+
+  --font-title: "Jeju Gothic", "Sofia Sans", sans-serif;
+  --font-body: "Sofia Sans Semi Condensed", "Sofia Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  background: #ffffff;
+}
+
+body {
+  overflow-x: hidden;
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.stage {
+  position: relative;
+  width: 1728px;
+  height: 1117px;
+  margin: 0 auto;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+}
+
+/* Buttons (Start Quiz, Back, Next) */
+
+.button {
+  height: 70px;
+  padding: 0;
+  background: var(--blue-bg);
+  border: 2px solid var(--blue);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 32px;
+  line-height: 1;
+}
+
+.button:hover {
+  filter: brightness(0.96);
+}
+
+.button:focus-visible,
+.option:focus-visible,
+.dropdown__button:focus-visible,
+.text-input:focus-visible,
+.step__jump:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
+}
+
+/* Welcome and done screens */
+
+.center-screen__title {
+  position: absolute;
+  top: 365px;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 75px;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+}
+
+.center-screen__text {
+  position: absolute;
+  top: 486px;
+  left: 50%;
+  width: 519px;
+  margin: 0;
+  transform: translateX(-50%);
+  color: var(--text-muted);
+  font-size: 24px;
+  line-height: normal;
+  text-align: center;
+}
+
+.center-screen__button {
+  position: absolute;
+  top: 694px;
+  left: 678px;
+  width: 372px;
+}
+
+/* Finish screen: stacked in the normal flow, centered, with room between parts */
+
+.center-screen--stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-screen--stack > * {
+  position: static;
+  transform: none;
+}
+
+.center-screen--stack .center-screen__text {
+  width: 640px;
+  margin-top: 40px;
+  line-height: 1.5;
+}
+
+.center-screen--stack .center-screen__button {
+  margin-top: 72px;
+}
+
+.pin-steps {
+  width: 640px;
+  margin: 64px 0 0;
+  padding: 36px 48px 36px 80px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  color: var(--text-muted);
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+.pin-steps li + li {
+  margin-top: 20px;
+}
+
+.pin-steps strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* Step list */
+
+.steps {
+  position: absolute;
+  top: 246px;
+  left: 97px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 32px;
+  line-height: 38px;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding-left: 11px;
+  color: var(--text-upcoming);
+  white-space: nowrap;
+}
+
+.step__number {
+  width: 58px;
+}
+
+.step__check {
+  display: none;
+}
+
+.step.is-current,
+.step.is-complete {
+  color: var(--text);
+}
+
+.step.is-complete .step__check {
+  display: block;
+}
+
+/* the black bar next to the current question */
+.step.is-current::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 3px;
+  height: 27px;
+  background: var(--text);
+}
+
+.step__jump {
+  display: contents;
+  color: inherit;
+}
+
+.step__jump .step__label {
+  text-decoration: underline transparent;
+  transition: text-decoration-color 120ms;
+}
+
+.step__jump:hover .step__label {
+  text-decoration-color: currentColor;
+}
+
+/* Question */
+
+.question {
+  position: absolute;
+  top: 165px;
+  left: 579px;
+  width: 882px;
+}
+
+.question__header {
+  min-height: 250px;
+}
+
+.question__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 48px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.question__description {
+  margin: 19px 0 0;
+  color: var(--text-muted);
+  font-size: 24px;
+  line-height: normal;
+}
+
+.question__error {
+  min-height: 29px;
+  margin: 24px 0 0;
+  color: var(--error);
+  font-size: 24px;
+}
+
+/* Multi-select options */
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, 397px);
+  gap: 60px 88px;
+}
+
+.option {
+  height: 116px;
+  padding: 0 16px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.option:hover {
+  border-color: var(--blue);
+}
+
+.option[aria-pressed="true"],
+.option[aria-checked="true"] {
+  background: var(--blue-bg);
+  border-color: var(--blue);
+}
+
+/* Long lists (roles) use smaller boxes in three columns so they fit the screen */
+.options--compact {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 24px;
+}
+
+.options--compact .option {
+  height: 72px;
+  font-size: 26px;
+}
+
+/* Dropdown */
+
+.dropdown {
+  position: relative;
+  width: 560px;
+}
+
+.dropdown__button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 68px;
+  padding: 0 26px 0 25px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 32px;
+  text-align: left;
+}
+
+.dropdown__value.is-placeholder {
+  opacity: 0.55;
+}
+
+.dropdown__chevron {
+  flex: none;
+  transition: transform 150ms;
+}
+
+.dropdown.is-open .dropdown__chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown__list {
+  position: absolute;
+  z-index: 1;
+  top: 66px;
+  left: 0;
+  width: 100%;
+  max-height: 298px;
+  margin: 0;
+  padding: 7px 0;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+}
+
+.dropdown__option {
+  position: relative;
+  height: 54px;
+  padding-left: 23px;
+  color: var(--text-muted);
+  font-size: 32px;
+  line-height: 54px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dropdown__option > span {
+  opacity: 0.55;
+}
+
+/* hovered / keyboard-highlighted option: black outline, from Figma */
+.dropdown__option.is-active::before {
+  content: "";
+  position: absolute;
+  inset: -7px -2px;
+  border: 2px solid var(--text);
+  pointer-events: none;
+}
+
+.dropdown__option.is-active > span {
+  color: var(--text);
+}
+
+/* Text box (for "Other") */
+
+.text-input {
+  display: block;
+  width: 560px;
+  height: 68px;
+  margin-top: 24px;
+  padding: 0 25px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 32px;
+}
+
+.text-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+.question__answer > .text-input:first-child {
+  margin-top: 0;
+}
+
+/* Location: city search, current-location button, chips */
+
+.places__search .places__input {
+  margin-top: 0;
+}
+
+.places__input:disabled {
+  cursor: not-allowed;
+}
+
+.places__here {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  margin-top: 20px;
+  padding: 0 24px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 26px;
+}
+
+.places__here:hover:not(:disabled) {
+  border-color: var(--blue);
+}
+
+.places__here:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.places__here:focus-visible,
+.place-chip__remove:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
+}
+
+.places__status {
+  min-height: 29px;
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 22px;
+}
+
+.places__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* same blue as a selected option */
+.place-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 8px 0 20px;
+  background: var(--blue-bg);
+  border: 2px solid var(--blue);
+  color: var(--text-muted);
+  font-size: 28px;
+}
+
+.place-chip__remove {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
+.place-chip__remove:hover {
+  background: rgba(50, 168, 204, 0.25);
+}
+
+/* Minimum pay: "$" inside the box, then Per Year / Per Hour */
+
+.money {
+  position: relative;
+  display: block;
+  width: 560px;
+}
+
+.money::before {
+  content: "$";
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 32px;
+}
+
+.text-input--money {
+  margin-top: 0;
+  padding-left: 50px;
+}
+
+.options--toggle {
+  grid-template-columns: repeat(2, 268px);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.options--toggle .option {
+  height: 72px;
+  font-size: 26px;
+}
+
+/* Ranking: rows in the option-box style, drag or use the arrows */
+
+.ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 560px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ranking__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  padding: 0 16px 0 25px;
+  background: var(--box-bg);
+  border: 2px solid var(--line);
+  color: var(--text-muted);
+  font-size: 32px;
+  cursor: grab;
+  user-select: none;
+}
+
+.ranking__item:first-child {
+  background: var(--blue-bg);
+  border-color: var(--blue);
+}
+
+.ranking__item.is-dragging {
+  opacity: 0.4;
+}
+
+.ranking__number {
+  width: 40px;
+}
+
+.ranking__label {
+  flex: 1;
+}
+
+.ranking__move {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.ranking__move:hover:not(:disabled) {
+  background: var(--line);
+}
+
+.ranking__move:disabled {
+  visibility: hidden;
+}
+
+.ranking__move--up img {
+  transform: rotate(180deg);
+}
+
+.ranking__move:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 1px;
+}
+
+/* six-dot grip so it reads as draggable */
+.ranking__handle {
+  width: 14px;
+  height: 22px;
+  margin-left: 4px;
+  background: radial-gradient(circle, var(--text-upcoming) 2px, transparent 2.5px) 0 0 / 7px 7.5px;
+}
+
+/* Back / Next */
+
+.nav {
+  position: absolute;
+  top: 884px;
+  left: 579px;
+  display: flex;
+  justify-content: space-between;
+  width: 882px;
+}
+
+.nav .button {
+  width: 400px;
+}
+
+.nav .button.is-hidden {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown__chevron {
+    transition: none;
+  }
+}

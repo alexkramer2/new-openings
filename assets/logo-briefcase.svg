@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="59.0889" height="48.1242" viewBox="0 0 59.0889 48.1242" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 2">
+<path id="Union" opacity="0.9" d="M41.713 0C43.3698 7.62819e-05 44.713 1.34319 44.713 3V9.74707H41.3019V3.41113H17.422V9.74707H14.0109V3C14.0109 1.34315 15.354 0 17.0109 0H41.713Z" fill="black"/>
+<path id="Exclude" d="M56.0889 10.965C57.7457 10.965 59.0889 12.3082 59.0889 13.965V45.1242C59.0889 46.7811 57.7457 48.1242 56.0889 48.1242H3C1.34315 48.1242 0 46.7811 0 45.1242V13.965C2.64622e-06 12.3082 1.34315 10.965 3 10.965H56.0889Z" fill="black"/>
+</g>
+</svg>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>New Openings</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <!-- Main view: job list -->
+    <section class="view" id="view-jobs">
+    <header class="header">
+      <div class="header__row">
+        <h1 class="header__title">New Openings</h1>
+        <button class="header__settings" id="settings" type="button" aria-label="Settings" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+      <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
+    </header>
+
+    <main class="list" id="job-list" aria-live="polite"></main>
+    </section>
+
+    <!-- Settings view (opened with ⚙) -->
+    <section class="view" id="view-settings" hidden>
+      <header class="header">
+        <div class="header__row header__row--sub">
+          <button class="header__back" type="button" data-go="jobs" aria-label="Back to New Openings">
+            <img src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+          </button>
+          <h1 class="header__title">Settings</h1>
+        </div>
+        <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
+      </header>
+      <nav class="menu">
+        <button class="menu__item" type="button" id="retake-quiz">
+          <span class="menu__text">
+            <span class="menu__label">Retake Quiz</span>
+            <span class="menu__hint">Change what kinds of jobs you’re matched with</span>
+          </span>
+          <img class="menu__arrow" src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+        </button>
+        <button class="menu__item" type="button" data-go="saved">
+          <span class="menu__text">
+            <span class="menu__label">Saved Jobs</span>
+            <span class="menu__hint">Openings you added to your list</span>
+          </span>
+          <img class="menu__arrow" src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+        </button>
+        <button class="menu__item" type="button" data-go="sources">
+          <span class="menu__text">
+            <span class="menu__label">Job Sources</span>
+            <span class="menu__hint">Connect job sites and check for new openings</span>
+          </span>
+          <img class="menu__arrow" src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+        </button>
+      </nav>
+    </section>
+
+    <!-- Job sources view: API keys and status -->
+    <section class="view" id="view-sources" hidden>
+      <header class="header">
+        <div class="header__row header__row--sub">
+          <button class="header__back" type="button" data-go="settings" aria-label="Back to Settings">
+            <img src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+          </button>
+          <h1 class="header__title">Job Sources</h1>
+        </div>
+        <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
+      </header>
+      <form class="sources" id="sources-form">
+        <div class="source" data-source="muse">
+          <p class="source__name">The Muse</p>
+          <p class="source__hint">Free, no key needed. Checks every 2 hours.</p>
+          <p class="source__status"></p>
+        </div>
+
+        <div class="source" data-source="adzuna">
+          <p class="source__name">Adzuna</p>
+          <p class="source__hint">
+            Jobs from thousands of sites. Checks every 4 hours.
+            <a href="https://developer.adzuna.com/signup" target="_blank" rel="noopener">Get a free key</a>
+          </p>
+          <label class="source__field">App ID <input name="adzunaId" autocomplete="off" spellcheck="false" /></label>
+          <label class="source__field">App Key <input name="adzunaKey" autocomplete="off" spellcheck="false" /></label>
+          <p class="source__status"></p>
+        </div>
+
+        <div class="source" data-source="jsearch">
+          <p class="source__name">JSearch (LinkedIn, Indeed and more)</p>
+          <p class="source__hint">
+            Checks twice a day to stay on the free plan.
+            <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener">Get a free key</a>
+          </p>
+          <label class="source__field">RapidAPI Key <input name="jsearchKey" autocomplete="off" spellcheck="false" /></label>
+          <p class="source__status"></p>
+        </div>
+
+        <button class="source__check" type="submit" id="check-now">Save and Check Now</button>
+        <p class="source__result" id="check-result" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Saved jobs view -->
+    <section class="view" id="view-saved" hidden>
+      <header class="header">
+        <div class="header__row header__row--sub">
+          <button class="header__back" type="button" data-go="settings" aria-label="Back to Settings">
+            <img src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+          </button>
+          <h1 class="header__title">Saved Jobs</h1>
+        </div>
+        <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
+      </header>
+      <div class="empty">
+        <p class="empty__title">No saved jobs yet</p>
+        <p class="empty__body">Jobs you add with “Add to List” will show up here once that feature is connected.</p>
+      </div>
+    </section>
+
+    <template id="job-card">
+      <article class="card">
+        <button class="card__clear" type="button" aria-label="Clear this opening" title="Not interested">
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+            <path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+        </button>
+
+        <ul class="card__tags">
+          <li class="tag" data-field="type"></li>
+          <li class="tag" data-field="field"></li>
+          <li class="tag" data-field="setting"></li>
+          <li class="tag" data-field="pay"></li>
+        </ul>
+
+        <h2 class="card__title">
+          <a class="card__link" data-field="title" target="_blank" rel="noopener"></a>
+        </h2>
+
+        <div class="card__body">
+          <div class="card__info">
+            <p class="card__meta">
+              <img src="../assets/icon-company.svg" width="5.72754" height="9" alt="" />
+              <span data-field="company"></span>
+            </p>
+            <p class="card__meta">
+              <img src="../assets/icon-location.svg" width="6" height="7.82812" alt="" />
+              <span data-field="location"></span>
+            </p>
+            <p class="card__description" data-field="description"></p>
+            <p class="card__source"></p>
+          </div>
+
+          <div class="card__side">
+            <div class="match" role="img">
+              <svg class="match__ring" width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
+                <circle class="match__bg" cx="31" cy="31" r="30.5" />
+                <circle class="match__arc" cx="31" cy="31" r="29" transform="rotate(-90 31 31)" />
+              </svg>
+              <span class="match__label">
+                <span class="match__percent"></span>
+                <span class="match__word">Match</span>
+              </span>
+            </div>
+            <button class="card__add" type="button" title="Coming soon">Add to List</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="empty-state">
+      <div class="empty">
+        <p class="empty__title">You're all caught up</p>
+        <p class="empty__body">New openings that match your quiz answers will show up here.</p>
+      </div>
+    </template>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

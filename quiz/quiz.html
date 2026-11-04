@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Job Search Quiz</title>
+    <link rel="icon" href="../icons/icon32.png" />
+    <link rel="stylesheet" href="quiz.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!-- Welcome -->
+      <section class="screen center-screen" id="welcome">
+        <h1 class="center-screen__title">Job Search quiz</h1>
+        <p class="center-screen__text">
+          This quiz will help determine what kind of jobs you are looking for and which will be a good match
+        </p>
+        <button class="button center-screen__button" id="start" type="button">Start Quiz</button>
+      </section>
+
+      <!-- One question at a time -->
+      <section class="screen" id="question" hidden>
+        <ol class="steps" id="steps"></ol>
+
+        <div class="question">
+          <header class="question__header">
+            <h1 class="question__title" id="question-title"></h1>
+            <p class="question__description" id="question-description"></p>
+          </header>
+          <div class="question__answer" id="answer"></div>
+          <p class="question__error" id="error" role="alert"></p>
+        </div>
+
+        <div class="nav">
+          <button class="button" id="back" type="button">Back</button>
+          <button class="button" id="next" type="button">Next</button>
+        </div>
+      </section>
+
+      <!-- After the last question -->
+      <section class="screen center-screen center-screen--stack" id="done" hidden>
+        <h1 class="center-screen__title">You’re All Set</h1>
+        <p class="center-screen__text">
+          Your answers are saved and every opening now gets a match score. One last step: pin the extension so you can see when new jobs come in.
+        </p>
+        <ol class="pin-steps">
+          <li>Click the puzzle piece in the top-right corner of Chrome.</li>
+          <li>Click the pin next to <strong>New Openings</strong>.</li>
+          <li>A red number on the icon means there are openings you haven’t seen.</li>
+        </ol>
+        <button class="button center-screen__button" id="edit" type="button">Edit Answers</button>
+      </section>
+    </div>
+
+    <template id="step-item">
+      <li class="step">
+        <span class="step__number"></span>
+        <span class="step__label"></span>
+        <img class="step__check" src="../assets/icon-check.svg" width="28.8284" height="21.2426" alt="Completed" />
+      </li>
+    </template>
+
+    <script type="module" src="quiz.js"></script>
+  </body>
+</html>
