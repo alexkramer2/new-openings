@@ -169,18 +169,69 @@ form.addEventListener("submit", async (event) => {
   await renderJobs();
 });
 
+// ---------- Full-Time / Internship / Any toggle ----------
+
+const FILTER_KEY = "popupTypeFilter";
+const filterButtons = [...document.querySelectorAll(".type-filter__option")];
+let typeFilter = "Any";
+try {
+  typeFilter = localStorage.getItem(FILTER_KEY) ?? "Any"; // remembered between popups
+} catch {}
+
+function syncFilter() {
+  for (const button of filterButtons) {
+    const on = button.dataset.type === typeFilter;
+    button.setAttribute("aria-checked", String(on));
+    button.tabIndex = on ? 0 : -1;
+  }
+}
+
+for (const button of filterButtons) {
+  button.addEventListener("click", () => {
+    typeFilter = button.dataset.type;
+    try {
+      localStorage.setItem(FILTER_KEY, typeFilter);
+    } catch {}
+    syncFilter();
+    renderJobs();
+  });
+}
+
+// Arrow keys move between the three options, like other radio groups.
+document.getElementById("type-filter").addEventListener("keydown", (event) => {
+  const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+  if (!step) return;
+  event.preventDefault();
+  const i = filterButtons.findIndex((b) => b.dataset.type === typeFilter);
+  const next = filterButtons[(i + step + filterButtons.length) % filterButtons.length];
+  next.click();
+  next.focus();
+});
+syncFilter();
+
 // ---------- Job list ----------
 
+const EMPTY_FOR = {
+  "Full-Time": "No full-time openings right now",
+  Internship: "No internships right now"
+};
+
 function showEmpty() {
-  list.replaceChildren(emptyTemplate.content.cloneNode(true));
+  const empty = emptyTemplate.content.cloneNode(true);
+  if (EMPTY_FOR[typeFilter]) {
+    empty.querySelector(".empty__title").textContent = EMPTY_FOR[typeFilter];
+    empty.querySelector(".empty__body").textContent = "Try “Any” to see every opening, or check back later.";
+  }
+  list.replaceChildren(empty);
 }
 
 async function renderJobs() {
   const [visible, answers] = await Promise.all([getVisibleJobs(), getMatchAnswers()]);
-  // Best matches first; low matches still show, at the bottom.
+  // Jobs whose type wasn't listed only show under "Any".
   const jobs = visible
+    .filter((job) => typeFilter === "Any" || job.type === typeFilter)
     .map((job) => ({ ...job, match: matchScore(job, answers) }))
-    .sort((a, b) => b.match - a.match)
+    .sort((a, b) => b.match - a.match) // best matches first; low matches still show, at the bottom
     .slice(0, POPUP_LIMIT);
   if (jobs.length === 0) showEmpty();
   else list.replaceChildren(...jobs.map((job, i) => renderCard(job, i, answers)));

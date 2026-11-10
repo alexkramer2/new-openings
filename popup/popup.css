@@ -270,12 +270,46 @@ button {
   text-align: center;
 }
 
+/* Full-Time / Internship / Any toggle (Figma node 49:776) */
+
+.type-filter {
+  display: flex;
+  gap: 9px;
+  padding: 12px 17px 0 19px;
+}
+
+.type-filter__option {
+  width: 61px;
+  height: 15px;
+  padding: 0;
+  background: var(--card-bg);
+  border: 0.5px solid var(--line);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1;
+}
+
+.type-filter__option:hover {
+  border-color: var(--blue);
+}
+
+.type-filter__option[aria-checked="true"] {
+  background: var(--blue-bg);
+  border-color: var(--blue);
+}
+
+.type-filter__option:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
 /* Job list – scrolls under the header so the popup stays under Chrome's 600px cap */
 
 .list {
-  max-height: 420px;
+  max-height: 395px;
   overflow-y: auto;
-  padding: 17px 17px 10px 19px;
+  padding: 12px 17px 10px 19px;
   display: flex;
   flex-direction: column;
   gap: 10px;

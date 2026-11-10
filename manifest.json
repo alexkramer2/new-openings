@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "New Openings",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Get notified about new job openings that match what you're looking for.",
   "action": {
     "default_title": "New Openings",
