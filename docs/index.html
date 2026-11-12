@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Saved Jobs · New Openings</title>
+    <meta name="description" content="Jobs you saved from the New Openings Chrome extension." />
+    <link rel="icon" href="assets/icon32.png" />
+    <link rel="stylesheet" href="css/site.css" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- Left menu (Figma node 49:1163) -->
+      <nav class="menu" aria-label="Main">
+        <ul class="menu__list">
+          <li><a class="menu__link is-current" href="./" aria-current="page">Saved Jobs</a></li>
+          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Uploads</span></li>
+          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Settings</span></li>
+          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Profile</span></li>
+        </ul>
+        <div class="account" id="account" hidden>
+          <p class="account__name" id="account-name"></p>
+          <button class="account__signout" id="sign-out" type="button">Sign out</button>
+        </div>
+      </nav>
+
+      <main class="main">
+        <h1 class="visually-hidden">Saved Jobs</h1>
+
+        <!-- Full-Time / Internship / Any toggle -->
+        <div class="type-filter" id="type-filter" role="radiogroup" aria-label="Show job type">
+          <button class="type-filter__option" type="button" role="radio" data-type="Full-Time">Full-Time</button>
+          <button class="type-filter__option" type="button" role="radio" data-type="Internship">Internship</button>
+          <button class="type-filter__option" type="button" role="radio" data-type="Any">Any</button>
+        </div>
+
+        <section class="grid" id="job-grid" aria-label="Saved jobs" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <template id="job-card">
+      <article class="card">
+        <button class="card__remove" type="button" title="Remove from your list">
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+            <path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+        </button>
+
+        <ul class="card__tags">
+          <li class="tag" data-field="type"></li>
+          <li class="tag" data-field="field"></li>
+          <li class="tag" data-field="setting"></li>
+          <li class="tag" data-field="pay"></li>
+        </ul>
+
+        <h2 class="card__title">
+          <a class="card__link" data-field="title" target="_blank" rel="noopener"></a>
+        </h2>
+
+        <div class="card__body">
+          <div class="card__info">
+            <p class="card__meta">
+              <img src="assets/icon-company.svg" width="5.72754" height="9" alt="" />
+              <span data-field="company"></span>
+            </p>
+            <p class="card__meta">
+              <img src="assets/icon-location.svg" width="6" height="7.82812" alt="" />
+              <span data-field="location"></span>
+            </p>
+            <p class="card__description" data-field="description"></p>
+          </div>
+
+          <div class="match" role="img">
+            <svg class="match__ring" width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
+              <circle class="match__bg" cx="31" cy="31" r="30.5" />
+              <circle class="match__arc" cx="31" cy="31" r="29" transform="rotate(-90 31 31)" />
+            </svg>
+            <span class="match__label">
+              <span class="match__percent"></span>
+              <span class="match__word">Match</span>
+            </span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="empty-card">
+      <div class="card card--empty">
+        <p class="empty__title">No jobs added to list</p>
+        <p class="empty__body">Click “Add to List” on a job in the New Openings extension and it will show up here.</p>
+      </div>
+    </template>
+
+    <script src="vendor/supabase.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

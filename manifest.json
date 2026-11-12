@@ -23,8 +23,9 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["storage", "alarms", "geolocation"],
+  "permissions": ["storage", "alarms", "geolocation", "identity"],
   "host_permissions": [
+    "https://wekotvzfgefnjtotwwjp.supabase.co/*",
     "https://photon.komoot.io/*",
     "https://www.themuse.com/api/*",
     "https://api.adzuna.com/*",

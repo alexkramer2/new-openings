@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign In · New Openings</title>
+    <meta name="description" content="Sign in to save jobs from the New Openings Chrome extension." />
+    <link rel="icon" href="assets/icon32.png" />
+    <link rel="stylesheet" href="css/site.css" />
+  </head>
+  <body>
+    <main class="signin">
+      <img class="signin__logo" src="assets/logo.svg" width="112" height="112" alt="New Openings" />
+
+      <h1 class="signin__title">Save Jobs You Like</h1>
+      <p class="signin__text">
+        Sign in to keep every job you add to your list in one place, on any computer. Only you can see your saved jobs.
+      </p>
+
+      <!-- Follows Google's sign-in button guidelines (white, gray outline, "G" mark) -->
+      <button class="google-button" id="google-signin" type="button">
+        <img src="assets/google-g.svg" width="20" height="20" alt="" />
+        <span>Sign in with Google</span>
+      </button>
+      <p class="signin__status" id="signin-status" role="status"></p>
+
+      <ul class="signin__perks">
+        <li><img src="assets/icon-check.svg" width="21" height="15.5" alt="" />Save jobs straight from the extension</li>
+        <li><img src="assets/icon-check.svg" width="21" height="15.5" alt="" />See your list on any computer you sign in on</li>
+        <li><img src="assets/icon-check.svg" width="21" height="15.5" alt="" />Upload your resume to match jobs better (coming soon)</li>
+      </ul>
+
+      <p class="signin__fine">New here? Signing in creates your account. We only use your name and email.</p>
+    </main>
+
+    <script src="vendor/supabase.js"></script>
+    <script type="module" src="js/signin.js"></script>
+  </body>
+</html>

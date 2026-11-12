@@ -11,12 +11,18 @@
     <header class="header">
       <div class="header__row">
         <h1 class="header__title">New Openings</h1>
-        <button class="header__settings" id="settings" type="button" aria-label="Settings" title="Settings">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </button>
+        <div class="header__actions">
+          <!-- Opens the Saved Jobs website (Figma node 49:1194) -->
+          <a class="header__saved" id="saved-jobs-link" href="../docs/index.html" target="_blank" rel="noopener" aria-label="Open your saved jobs" title="Saved jobs">
+            <img src="../assets/icon-saved-jobs.svg" width="13" height="13" alt="" />
+          </a>
+          <button class="header__settings" id="settings" type="button" aria-label="Settings" title="Settings">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+        </div>
       </div>
       <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
     </header>
@@ -53,6 +59,13 @@
           <span class="menu__text">
             <span class="menu__label">Saved Jobs</span>
             <span class="menu__hint">Openings you added to your list</span>
+          </span>
+          <img class="menu__arrow" src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+        </button>
+        <button class="menu__item" type="button" id="account-row">
+          <span class="menu__text">
+            <span class="menu__label">Sign In</span>
+            <span class="menu__hint">Sign in with Google to save jobs to your list</span>
           </span>
           <img class="menu__arrow" src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
         </button>
@@ -108,6 +121,32 @@
         <button class="source__check" type="submit" id="check-now">Save and Check Now</button>
         <p class="source__result" id="check-result" aria-live="polite"></p>
       </form>
+    </section>
+
+    <!-- Sign-in prompt: shown the first time someone clicks Add to List -->
+    <section class="view" id="view-signin" hidden>
+      <header class="header">
+        <div class="header__row header__row--sub">
+          <button class="header__back" type="button" data-go="jobs" aria-label="Back to New Openings">
+            <img src="../assets/icon-chevron.svg" width="19.4142" height="11.1213" alt="" />
+          </button>
+          <h1 class="header__title">Save This Job</h1>
+        </div>
+        <img class="header__divider" src="../assets/divider.svg" width="306" height="1" alt="" />
+      </header>
+      <div class="signin">
+        <img class="signin__logo" src="../assets/logo.svg" width="56" height="56" alt="" />
+        <p class="signin__title">Sign in to save jobs</p>
+        <p class="signin__job" id="signin-job"></p>
+        <p class="signin__text">
+          Your list lives on the New Openings website, so you can see it on any computer. It only takes a moment with your Google account.
+        </p>
+        <button class="google-button" id="google-signin" type="button">
+          <img src="../assets/google-g.svg" width="14" height="14" alt="" />
+          <span>Sign in with Google</span>
+        </button>
+        <p class="signin__fine">This job will be saved as soon as you’re signed in.</p>
+      </div>
     </section>
 
     <!-- Saved jobs view -->

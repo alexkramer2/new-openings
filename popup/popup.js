@@ -9,8 +9,10 @@ import {
   POPUP_LIMIT
 } from "../lib/store.js";
 import { tagFits, matchScore } from "../lib/fit.js";
+import { getAccount, saveJob, savedJobIds, setPendingSave, signOut, SITE_URL } from "../lib/account.js";
 
 const isExtension = typeof chrome !== "undefined" && Boolean(chrome.runtime?.id);
+let savedIds = new Set(); // jobs already on the person's list (filled in by init)
 
 const list = document.getElementById("job-list");
 const cardTemplate = document.getElementById("job-card");
@@ -65,11 +67,33 @@ function renderCard(job, index, answers) {
     });
   });
 
-  // Saving jobs isn't built yet, so say so instead of doing nothing.
+  // Add to List: saves to the person's account, or asks them to sign in first.
   const add = card.querySelector(".card__add");
-  add.addEventListener("click", () => {
-    add.textContent = "Coming Soon";
-    setTimeout(() => (add.textContent = "Add to List"), 1500);
+  const markSaved = () => {
+    add.textContent = "Saved ✓";
+    add.classList.add("is-saved");
+    add.disabled = true;
+  };
+  if (savedIds.has(job.id)) markSaved();
+  add.addEventListener("click", async () => {
+    const snapshot = { ...job, fits }; // the card as shown, for the website
+    if (await getAccount()) {
+      add.textContent = "Saving…";
+      try {
+        await saveJob(snapshot);
+        savedIds.add(job.id);
+        markSaved();
+        return;
+      } catch (error) {
+        if (error.message !== "signed-out") {
+          add.textContent = "Try Again";
+          return;
+        }
+      }
+    }
+    await setPendingSave(snapshot);
+    document.getElementById("signin-job").textContent = `${job.title} · ${job.company}`;
+    showView("signin");
   });
 
   card.querySelector(".card__clear").addEventListener("click", async () => {
@@ -95,19 +119,80 @@ const views = {
   jobs: document.getElementById("view-jobs"),
   settings: document.getElementById("view-settings"),
   saved: document.getElementById("view-saved"),
-  sources: document.getElementById("view-sources")
+  sources: document.getElementById("view-sources"),
+  signin: document.getElementById("view-signin")
 };
 
 function showView(name) {
   for (const [key, el] of Object.entries(views)) el.hidden = key !== name;
   views[name].querySelector("button")?.focus();
   if (name === "sources") renderSources();
+  if (name === "settings") renderAccountRow();
+  if (name === "signin") showSignInError();
 }
 
 document.getElementById("settings").addEventListener("click", () => showView("settings"));
 for (const button of document.querySelectorAll("[data-go]")) {
   button.addEventListener("click", () => showView(button.dataset.go));
 }
+
+// The grid icon opens the Saved Jobs website.
+const savedJobsLink = document.getElementById("saved-jobs-link");
+savedJobsLink.href = isExtension ? SITE_URL : "../docs/index.html?demo";
+savedJobsLink.addEventListener("click", (event) => {
+  if (!isExtension) return; // a normal link works in a browser preview
+  event.preventDefault();
+  chrome.tabs.create({ url: SITE_URL });
+  window.close();
+});
+
+// "Sign in with Google": the background worker opens Google's sign-in window,
+// then saves the job they clicked and opens their list. The popup closes when
+// that window opens, so it doesn't wait here.
+const googleButton = document.getElementById("google-signin");
+const signInNote = document.querySelector("#view-signin .signin__fine");
+googleButton.addEventListener("click", () => {
+  if (!isExtension) {
+    signInNote.textContent = "Sign-in only works inside the installed extension.";
+    return;
+  }
+  googleButton.disabled = true;
+  signInNote.textContent = "Opening Google…";
+  chrome.runtime.sendMessage({ type: "sign-in" }).then((result) => {
+    googleButton.disabled = false;
+    if (result?.ok) init();
+    else showSignInError();
+  });
+});
+
+async function showSignInError() {
+  if (!isExtension) return;
+  const { signInError } = await chrome.storage.local.get("signInError");
+  signInNote.textContent = signInError
+    ? `Sign-in didn’t work: ${signInError}`
+    : "This job will be saved as soon as you’re signed in.";
+}
+
+// Settings → account row: who's signed in, and sign out (or sign in).
+const accountRow = document.getElementById("account-row");
+async function renderAccountRow() {
+  const account = await getAccount();
+  accountRow.querySelector(".menu__label").textContent = account ? "Sign Out" : "Sign In";
+  accountRow.querySelector(".menu__hint").textContent = account
+    ? `Signed in as ${account.name || account.email}`
+    : "Sign in with Google to save jobs to your list";
+}
+accountRow.addEventListener("click", async () => {
+  if (await getAccount()) {
+    await signOut();
+    savedIds = new Set();
+    await renderAccountRow();
+    await renderJobs();
+  } else {
+    document.getElementById("signin-job").textContent = "";
+    showView("signin");
+  }
+});
 
 // Retake Quiz opens the quiz in a new tab, at question 1 with the saved answers.
 document.getElementById("retake-quiz").addEventListener("click", () => {
@@ -239,6 +324,9 @@ async function renderJobs() {
 }
 
 async function init() {
+  // Already-saved jobs show "Saved ✓" instead of Add to List.
+  savedIds = (await getAccount()) ? await savedJobIds() : new Set();
+  if (!views.signin.hidden) showView("jobs");
   const jobs = await renderJobs();
   // Opening the popup counts as seeing these openings, so the badge clears.
   await markSeen(jobs.map((job) => job.id));
