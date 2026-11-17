@@ -14,7 +14,6 @@ const NOT_LISTED = { type: "Type not listed", field: "Field not listed", setting
 const grid = document.getElementById("job-grid");
 const cardTemplate = document.getElementById("job-card");
 const emptyTemplate = document.getElementById("empty-card");
-const filterButtons = [...document.querySelectorAll(".type-filter__option")];
 
 // ---------- Saved jobs ----------
 
@@ -33,7 +32,7 @@ async function loadSaved() {
     loadError = "Your saved jobs couldn’t load. Refresh the page to try again.";
     return [];
   }
-  return data.map((row) => ({ ...row.job, rowId: row.id }));
+  return data.map((row) => ({ ...row.job, rowId: row.id, savedAt: row.saved_at }));
 }
 
 async function removeSaved(job) {
@@ -112,53 +111,131 @@ function renderEmpty() {
   if (loadError) {
     empty.querySelector(".empty__title").textContent = "Something went wrong";
     empty.querySelector(".empty__body").textContent = loadError;
+  } else if (savedJobs.length && typeFilter === "Any") {
+    // Something is saved, but the other filters hide it all.
+    empty.querySelector(".empty__title").textContent = "No saved jobs match";
+    empty.querySelector(".empty__body").textContent = "Try changing or clearing the filters above.";
   } else if (savedJobs.length && typeFilter !== "Any") {
     // Something is saved, but not of the chosen type.
     empty.querySelector(".empty__title").textContent =
       typeFilter === "Internship" ? "No internships saved" : "No full-time jobs saved";
-    empty.querySelector(".empty__body").textContent = "Choose “Any” to see everything on your list.";
+    empty.querySelector(".empty__body").textContent = "Set Type to “Any” to see everything on your list.";
   }
   return empty;
 }
 
-function render() {
-  // Best matches first. Jobs whose type wasn't listed only show under "Any".
-  const jobs = savedJobs
-    .filter((job) => typeFilter === "Any" || job.type === typeFilter)
-    .sort((a, b) => b.match - a.match);
-  grid.replaceChildren(...(jobs.length ? jobs.map(renderCard) : [renderEmpty()]));
+// ---------- Sort and filters ----------
+
+const FILTERS_KEY = "savedJobsFilters";
+const controls = {
+  sort: document.getElementById("sort"),
+  setting: document.getElementById("setting"),
+  field: document.getElementById("field"),
+  location: document.getElementById("location")
+};
+const payToggle = document.getElementById("pay-toggle");
+
+let filters = { sort: "match", setting: "", field: "", location: "", meetsPay: false };
+try {
+  filters = { ...filters, ...JSON.parse(localStorage.getItem(FILTERS_KEY)) };
+} catch {}
+
+function saveFilters() {
+  try {
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  } catch {}
 }
 
-// ---------- Full-Time / Internship / Any toggle ----------
+// "$54,400-$70,500/yr" → 54400; "$22-$25/hr" → 22 × 2080 hours. No pay → -1 (last).
+function yearlyPay(pay) {
+  const amount = Number(String(pay ?? "").match(/[\d,.]+/)?.[0]?.replace(/,/g, ""));
+  if (!amount) return -1;
+  return /hr|hour/i.test(pay) ? amount * 2080 : /k\b/i.test(pay) ? amount * 1000 : amount;
+}
 
-function syncFilter() {
-  for (const button of filterButtons) {
-    const on = button.dataset.type === typeFilter;
-    button.setAttribute("aria-checked", String(on));
-    button.tabIndex = on ? 0 : -1;
+// "Kansas City, Missouri" → "Missouri"; "Remote" stays "Remote".
+function placeOf(job) {
+  const location = job.location?.trim();
+  if (!location) return "";
+  return location.split(",").pop().trim();
+}
+
+// Field and Location choices come from what's actually saved.
+function fillChoices(select, values, label) {
+  const current = filters[select.id];
+  const options = [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  if (current && !options.includes(current)) options.push(current);
+  select.replaceChildren(
+    new Option(`${label}: Any`, ""),
+    ...options.map((value) => new Option(value, value))
+  );
+  select.value = current;
+}
+
+function syncControls() {
+  fillChoices(controls.field, savedJobs.map((job) => job.field), "Field");
+  fillChoices(controls.location, savedJobs.map(placeOf), "Location");
+  for (const [key, select] of Object.entries(controls)) {
+    select.value = filters[key];
+    select.classList.toggle("is-on", key !== "sort" && Boolean(filters[key]));
   }
+  payToggle.setAttribute("aria-pressed", String(filters.meetsPay));
 }
 
-for (const button of filterButtons) {
-  button.addEventListener("click", () => {
-    typeFilter = button.dataset.type;
-    try {
-      localStorage.setItem(FILTER_KEY, typeFilter);
-    } catch {}
-    syncFilter();
+for (const [key, select] of Object.entries(controls)) {
+  select.addEventListener("change", () => {
+    filters[key] = select.value;
+    saveFilters();
+    syncControls();
     render();
   });
 }
 
-// Arrow keys move between the three options, like other radio groups.
-document.getElementById("type-filter").addEventListener("keydown", (event) => {
-  const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
-  if (!step) return;
-  event.preventDefault();
-  const i = filterButtons.findIndex((b) => b.dataset.type === typeFilter);
-  const next = filterButtons[(i + step + filterButtons.length) % filterButtons.length];
-  next.click();
-  next.focus();
+payToggle.addEventListener("click", () => {
+  filters.meetsPay = !filters.meetsPay;
+  saveFilters();
+  syncControls();
+  render();
+});
+
+const SORTS = {
+  match: (a, b) => b.match - a.match,
+  newest: (a, b) => (b.savedAt ?? "").localeCompare(a.savedAt ?? "") || a.order - b.order,
+  pay: (a, b) => yearlyPay(b.pay) - yearlyPay(a.pay) || b.match - a.match,
+  company: (a, b) => (a.company ?? "").localeCompare(b.company ?? "")
+};
+
+function render() {
+  // Jobs whose type wasn't listed only show under "Any".
+  const jobs = savedJobs
+    .map((job, order) => ({ job, order, savedAt: job.savedAt, match: job.match, pay: job.pay, company: job.company }))
+    .filter(({ job }) => typeFilter === "Any" || job.type === typeFilter)
+    .filter(({ job }) => !filters.setting || job.setting === filters.setting)
+    .filter(({ job }) => !filters.field || job.field === filters.field)
+    .filter(({ job }) => !filters.location || placeOf(job) === filters.location)
+    // Meets My Pay: the pay tag was green (fits the quiz's minimum) when saved.
+    .filter(({ job }) => !filters.meetsPay || job.fits?.pay === true)
+    .sort(SORTS[filters.sort] ?? SORTS.match)
+    .map(({ job }) => job);
+  grid.replaceChildren(...(jobs.length ? jobs.map(renderCard) : [renderEmpty()]));
+}
+
+// ---------- Type dropdown: Full-Time / Internship / Any ----------
+
+const typeSelect = document.getElementById("type");
+
+function syncFilter() {
+  typeSelect.value = typeFilter;
+  typeSelect.classList.toggle("is-on", typeFilter !== "Any");
+}
+
+typeSelect.addEventListener("change", () => {
+  typeFilter = typeSelect.value;
+  try {
+    localStorage.setItem(FILTER_KEY, typeFilter);
+  } catch {}
+  syncFilter();
+  render();
 });
 
 // ---------- Start: check sign-in, then load the list ----------
@@ -183,5 +260,6 @@ if (!DEMO) {
 
 if (DEMO || signedIn) {
   savedJobs = await loadSaved();
+  syncControls();
   render();
 }

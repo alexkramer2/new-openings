@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings · New Openings</title>
+    <meta name="description" content="Your profile, job preferences and account." />
+    <link rel="icon" href="assets/icon32.png" />
+    <link rel="stylesheet" href="css/site.css" />
+  </head>
+  <body>
+    <div class="page">
+      <nav class="menu" aria-label="Main">
+        <ul class="menu__list">
+          <li><a class="menu__link" href="./">Saved Jobs</a></li>
+          <li><a class="menu__link" href="uploads.html">Uploads</a></li>
+          <li><a class="menu__link is-current" href="settings.html" aria-current="page">Settings</a></li>
+        </ul>
+      </nav>
+
+      <main class="main">
+        <h1 class="visually-hidden">Settings</h1>
+
+        <div class="settings">
+          <!-- Profile: from the Google sign-in -->
+          <section class="setting" aria-labelledby="profile-title">
+            <h2 class="setting__title" id="profile-title">Profile</h2>
+            <div class="profile">
+              <div class="profile__avatar">
+                <span class="profile__photo" id="profile-photo" aria-hidden="true"></span>
+                <!-- Edit button, Figma node 62:454 -->
+                <label class="profile__edit" title="Change profile picture">
+                  <img src="assets/icon-edit.svg" width="26" height="26" alt="" />
+                  <span class="visually-hidden">Change profile picture</span>
+                  <input class="visually-hidden" id="photo-input" type="file" accept="image/*" />
+                </label>
+              </div>
+              <div class="profile__text">
+                <p class="profile__name" id="profile-name"></p>
+                <p class="profile__email" id="profile-email"></p>
+                <p class="setting__note">Signed in with Google</p>
+              </div>
+              <button class="setting__button" id="sign-out" type="button">Sign Out</button>
+            </div>
+          </section>
+
+          <!-- Job preferences: the quiz lives in the extension -->
+          <section class="setting" aria-labelledby="prefs-title">
+            <h2 class="setting__title" id="prefs-title">Job Preferences</h2>
+            <p class="setting__text">
+              Your match percentages come from the quiz in the New Openings extension: your field, roles,
+              locations, pay and start date.
+            </p>
+            <button class="setting__button" id="retake-quiz" type="button">Retake Quiz</button>
+            <p class="setting__note" id="quiz-note" hidden>
+              The quiz opens in the New Openings extension.
+              <a href="https://github.com/alexkramer2/new-openings/releases/latest" target="_blank" rel="noopener">Install the extension</a>
+              in Chrome to take it.
+            </p>
+          </section>
+
+          <!-- Delete account -->
+          <section class="setting setting--danger" aria-labelledby="delete-title">
+            <h2 class="setting__title" id="delete-title">Delete Account</h2>
+            <p class="setting__text">
+              Permanently removes your account and every job on your list. This can’t be undone.
+            </p>
+            <button class="setting__button setting__button--danger" id="delete-account" type="button">Delete Account</button>
+            <p class="setting__status" id="delete-status" role="status"></p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="vendor/supabase.js"></script>
+    <script type="module" src="js/settings.js"></script>
+  </body>
+</html>

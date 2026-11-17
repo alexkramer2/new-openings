@@ -31,6 +31,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     checkForJobs({ force: true }).then(sendResponse, (error) => sendResponse({ error: error.message }));
     return true; // keep the channel open for the async reply
   }
+  // "Retake Quiz" on the website's Settings page (sent by lib/site-bridge.js).
+  if (message?.type === "open-quiz") {
+    chrome.tabs.create({ url: chrome.runtime.getURL("quiz/quiz.html?edit") });
+    return;
+  }
   // "Sign in with Google" in the popup. Runs here because the popup closes
   // when Google's sign-in window opens.
   if (message?.type === "sign-in") {

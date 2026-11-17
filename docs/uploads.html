@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uploads · New Openings</title>
+    <meta name="description" content="Your resume, cover letter, portfolio and links." />
+    <link rel="icon" href="assets/icon32.png" />
+    <link rel="stylesheet" href="css/site.css" />
+  </head>
+  <body>
+    <div class="page">
+      <nav class="menu" aria-label="Main">
+        <ul class="menu__list">
+          <li><a class="menu__link" href="./">Saved Jobs</a></li>
+          <li><a class="menu__link is-current" href="uploads.html" aria-current="page">Uploads</a></li>
+          <li><a class="menu__link" href="settings.html">Settings</a></li>
+        </ul>
+        <div class="account" id="account" hidden>
+          <p class="account__name" id="account-name"></p>
+          <button class="account__signout" id="sign-out" type="button">Sign out</button>
+        </div>
+      </nav>
+
+      <main class="main">
+        <h1 class="visually-hidden">Uploads</h1>
+
+        <!-- 2 × 2 grid, Figma node 56:143 -->
+        <div class="uploads">
+          <label class="upload" data-key="resume">
+            <span class="upload__title">Upload Resume</span>
+            <span class="upload__file"></span>
+            <img class="upload__icon" src="assets/icon-upload.svg" width="74" height="74" alt="" />
+            <input class="visually-hidden" type="file" accept=".pdf,.doc,.docx" />
+          </label>
+
+          <label class="upload" data-key="coverLetter">
+            <span class="upload__title">Upload Cover Letter</span>
+            <span class="upload__file"></span>
+            <img class="upload__icon" src="assets/icon-upload.svg" width="74" height="74" alt="" />
+            <input class="visually-hidden" type="file" accept=".pdf,.doc,.docx" />
+          </label>
+
+          <label class="upload" data-key="portfolio">
+            <span class="upload__title">Upload Portfolio</span>
+            <span class="upload__file"></span>
+            <img class="upload__icon" src="assets/icon-upload.svg" width="74" height="74" alt="" />
+            <input class="visually-hidden" type="file" accept=".pdf" />
+          </label>
+
+          <div class="links">
+            <div class="link" data-key="website">
+              <p class="link__title">Link to Website</p>
+              <button class="link__button" type="button">Add Link</button>
+              <a class="link__saved" target="_blank" rel="noopener" hidden></a>
+              <form class="link__form" hidden>
+                <input type="url" placeholder="Add Link" aria-label="Website link" required />
+                <button type="submit">Save</button>
+              </form>
+            </div>
+
+            <div class="link" data-key="linkedin">
+              <p class="link__title">Link to LinkedIn</p>
+              <button class="link__button" type="button">Add Link</button>
+              <a class="link__saved" target="_blank" rel="noopener" hidden></a>
+              <form class="link__form" hidden>
+                <input type="url" placeholder="Add Link" aria-label="LinkedIn link" required />
+                <button type="submit">Save</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="vendor/supabase.js"></script>
+    <script type="module" src="js/uploads.js"></script>
+  </body>
+</html>

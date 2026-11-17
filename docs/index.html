@@ -14,9 +14,8 @@
       <nav class="menu" aria-label="Main">
         <ul class="menu__list">
           <li><a class="menu__link is-current" href="./" aria-current="page">Saved Jobs</a></li>
-          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Uploads</span></li>
-          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Settings</span></li>
-          <li><span class="menu__link is-soon" title="Coming soon" aria-disabled="true">Profile</span></li>
+          <li><a class="menu__link" href="uploads.html">Uploads</a></li>
+          <li><a class="menu__link" href="settings.html">Settings</a></li>
         </ul>
         <div class="account" id="account" hidden>
           <p class="account__name" id="account-name"></p>
@@ -27,11 +26,43 @@
       <main class="main">
         <h1 class="visually-hidden">Saved Jobs</h1>
 
-        <!-- Full-Time / Internship / Any toggle -->
-        <div class="type-filter" id="type-filter" role="radiogroup" aria-label="Show job type">
-          <button class="type-filter__option" type="button" role="radio" data-type="Full-Time">Full-Time</button>
-          <button class="type-filter__option" type="button" role="radio" data-type="Internship">Internship</button>
-          <button class="type-filter__option" type="button" role="radio" data-type="Any">Any</button>
+        <!-- Sort and filters (a first pass; not in Figma yet) -->
+        <div class="filters" id="filters">
+          <label class="filter">
+            <span class="visually-hidden">Sort by</span>
+            <select id="sort">
+              <option value="match">Sort: Best Match</option>
+              <option value="newest">Sort: Newest Saved</option>
+              <option value="pay">Sort: Highest Pay</option>
+              <option value="company">Sort: Company A–Z</option>
+            </select>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">Type</span>
+            <select id="type">
+              <option value="Any">Type: Any</option>
+              <option value="Full-Time">Full-Time</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">Setting</span>
+            <select id="setting">
+              <option value="">Setting: Any</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="On-site">On-site</option>
+            </select>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">Field</span>
+            <select id="field"><option value="">Field: Any</option></select>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">Location</span>
+            <select id="location"><option value="">Location: Any</option></select>
+          </label>
+          <button class="filter filter--toggle" id="pay-toggle" type="button" aria-pressed="false">Meets My Pay</button>
         </div>
 
         <section class="grid" id="job-grid" aria-label="Saved jobs" aria-live="polite"></section>

@@ -158,11 +158,20 @@ googleButton.addEventListener("click", () => {
   }
   googleButton.disabled = true;
   signInNote.textContent = "Opening Google…";
-  chrome.runtime.sendMessage({ type: "sign-in" }).then((result) => {
-    googleButton.disabled = false;
-    if (result?.ok) init();
-    else showSignInError();
-  });
+  chrome.runtime.sendMessage({ type: "sign-in" }).then(
+    (result) => {
+      googleButton.disabled = false;
+      if (result?.ok) init();
+      else if (result?.error && !/did not approve|canceled|cancelled|closed/i.test(result.error)) {
+        signInNote.textContent = `Sign-in didn’t work: ${result.error}`;
+      } else showSignInError();
+    },
+    // The background worker didn't answer (for example, it failed to start).
+    (error) => {
+      googleButton.disabled = false;
+      signInNote.textContent = `Sign-in didn’t work: ${error.message}`;
+    }
+  );
 });
 
 async function showSignInError() {
