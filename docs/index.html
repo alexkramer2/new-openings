@@ -71,6 +71,11 @@
 
     <template id="job-card">
       <article class="card">
+        <!-- Applied bar, Figma node 62:494 (shown when the extension saw you apply) -->
+        <div class="card__applied" hidden>
+          <span>Applied</span>
+          <button class="card__undo" type="button">Undo</button>
+        </div>
         <button class="card__remove" type="button" title="Remove from your list">
           <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
             <path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />

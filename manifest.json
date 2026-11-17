@@ -25,12 +25,36 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://alexkramer2.github.io/new-openings/*"],
-      "js": ["lib/site-bridge.js"],
+      "matches": [
+        "https://alexkramer2.github.io/new-openings/*"
+      ],
+      "js": [
+        "lib/site-bridge.js"
+      ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://boards.greenhouse.io/*",
+        "https://job-boards.greenhouse.io/*",
+        "https://jobs.lever.co/*",
+        "https://jobs.ashbyhq.com/*",
+        "https://*.myworkdayjobs.com/*",
+        "https://jobs.smartrecruiters.com/*"
+      ],
+      "js": [
+        "lib/apply-detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ],
-  "permissions": ["storage", "alarms", "geolocation", "identity"],
+  "permissions": [
+    "storage",
+    "alarms",
+    "geolocation",
+    "identity"
+  ],
   "host_permissions": [
     "https://wekotvzfgefnjtotwwjp.supabase.co/*",
     "https://photon.komoot.io/*",

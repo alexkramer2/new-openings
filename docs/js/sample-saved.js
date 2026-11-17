@@ -16,7 +16,8 @@ export const SAMPLE_SAVED_JOBS = [
       "Garmin is hiring a full-time UI Designer to conceptualize, design, and prototype user interface experiences for its products using Illustrator, Photoshop, and Figma. This role suits recent grads with a design degree and strong visual/UI skills who want to work on-site at Garmin's Kansas City-area headquarters.",
     url: "https://careers.garmin.com/",
     match: 83,
-    fits: { type: true, field: true, setting: true, pay: true }
+    fits: { type: true, field: true, setting: true, pay: true },
+    status: "applied"
   },
   {
     id: "sample-hallmark-ux-intern",

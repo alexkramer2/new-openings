@@ -24,15 +24,36 @@ let loadError = "";
 // (including match % and tag colors); `rowId` is kept so it can be removed.
 async function loadSaved() {
   if (DEMO) return params.has("empty") ? [] : SAMPLE_SAVED_JOBS;
-  const { data, error } = await supabase
-    .from("saved_jobs")
-    .select("id, job, saved_at")
-    .order("saved_at", { ascending: false });
+  const query = (columns) =>
+    supabase.from("saved_jobs").select(columns).order("saved_at", { ascending: false });
+  let { data, error } = await query("id, job, saved_at, status, applied_at");
+  // Before the Applied columns exist in the database, load without them.
+  if (error) ({ data, error } = await query("id, job, saved_at"));
   if (error) {
     loadError = "Your saved jobs couldn’t load. Refresh the page to try again.";
     return [];
   }
-  return data.map((row) => ({ ...row.job, rowId: row.id, savedAt: row.saved_at }));
+  return data.map((row) => ({
+    ...row.job,
+    rowId: row.id,
+    savedAt: row.saved_at,
+    status: row.status ?? "saved",
+    appliedAt: row.applied_at ?? null
+  }));
+}
+
+// Undo on the Applied bar: back to "want to apply".
+async function setStatus(job, status) {
+  const previous = { status: job.status, appliedAt: job.appliedAt };
+  job.status = status;
+  job.appliedAt = status === "applied" ? new Date().toISOString() : null;
+  if (DEMO || !job.rowId) return true;
+  const { error } = await supabase
+    .from("saved_jobs")
+    .update({ status, applied_at: job.appliedAt })
+    .eq("id", job.rowId);
+  if (error) Object.assign(job, previous);
+  return !error;
 }
 
 async function removeSaved(job) {
@@ -72,10 +93,26 @@ function renderCard(job, index) {
     tag.classList.toggle("tag--fit", !unknown && job.fits?.[field] === true);
   }
 
-  // The title opens the real posting.
+  // The title opens the real posting. The extension (if installed) notes which
+  // job was opened, to recognize the application afterwards.
   const link = card.querySelector(".card__link");
   if (job.url) link.href = job.url;
   else link.removeAttribute("target");
+  link.addEventListener("click", () => {
+    window.postMessage({ source: "new-openings-site", type: "opened-job", jobId: job.id }, location.origin);
+  });
+
+  // Green "Applied" bar above the card, with Undo.
+  const applied = card.querySelector(".card__applied");
+  applied.hidden = job.status !== "applied";
+  card.classList.toggle("is-applied", job.status === "applied");
+  const undo = card.querySelector(".card__undo");
+  undo.setAttribute("aria-label", `Undo applied for ${job.title}`);
+  undo.addEventListener("click", async () => {
+    const ok = await setStatus(job, "saved");
+    applied.hidden = job.status !== "applied";
+    card.classList.toggle("is-applied", job.status === "applied");
+  });
 
   const match = card.querySelector(".match");
   const arc = card.querySelector(".match__arc");

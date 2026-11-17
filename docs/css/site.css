@@ -273,6 +273,50 @@ a.menu__link:focus-visible {
   animation: card-in 280ms ease-out both;
 }
 
+/* "Applied" bar above the card (Figma 62:494): 14 px, sits in the gap above */
+.card__applied {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: -14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 14px;
+  padding: 0 6px 0 7px;
+  background: var(--green-bg);
+  border: 1px solid var(--line);
+  color: #554e4e;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.card__applied[hidden] {
+  display: none;
+}
+
+/* Undo shows on hover or keyboard focus */
+.card__undo {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: #554e4e;
+  font-size: 8px;
+  text-decoration: underline;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.card:hover .card__undo,
+.card__undo:focus-visible {
+  opacity: 1;
+}
+
+.card__undo:focus-visible {
+  outline: 1px solid var(--text);
+  outline-offset: 1px;
+}
+
 .card.is-leaving {
   animation: card-out 200ms ease-in forwards;
 }
@@ -626,6 +670,11 @@ a.menu__link:focus-visible {
   text-align: center;
 }
 
+/* with a file name and Remove showing, start higher so the box keeps its size */
+.upload.is-done {
+  padding-top: 70px;
+}
+
 .upload:hover,
 .upload.is-dragging {
   border-color: var(--blue);
@@ -655,6 +704,33 @@ a.menu__link:focus-visible {
 
 .upload__icon {
   margin-top: 40px;
+}
+
+/* Remove: under the icon, only once a file is uploaded */
+.upload__remove {
+  margin-top: 16px;
+  min-width: 126px;
+  height: 39px;
+  padding: 0 18px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: #554e4e;
+  font-size: 20px;
+}
+
+.upload__remove[hidden] {
+  display: none;
+}
+
+.upload__remove:hover {
+  border-color: #c62d24;
+  color: #c62d24;
+}
+
+.upload__remove:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
 }
 
 /* Links box: Website and LinkedIn, each with Add Link on the right */

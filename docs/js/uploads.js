@@ -25,6 +25,7 @@ function showUpload(box) {
   box.classList.toggle("is-done", Boolean(name));
   box.querySelector(".upload__file").textContent = name ?? "";
   box.querySelector(".upload__icon").src = name ? "assets/icon-upload-done.svg" : "assets/icon-upload.svg";
+  box.querySelector(".upload__remove").hidden = !name;
 }
 
 function useFile(box, file) {
@@ -48,6 +49,19 @@ for (const box of document.querySelectorAll(".upload")) {
     event.preventDefault();
     box.classList.remove("is-dragging");
     useFile(box, event.dataTransfer.files[0]);
+  });
+
+  // Remove: forget the file. The box is a <label>, so stop the click from
+  // also opening the file picker.
+  const remove = box.querySelector(".upload__remove");
+  remove.setAttribute("aria-label", `Remove ${box.querySelector(".upload__title").textContent.replace("Upload ", "").toLowerCase()}`);
+  remove.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    delete saved[box.dataset.key];
+    remember();
+    input.value = "";
+    showUpload(box);
   });
 
   showUpload(box);

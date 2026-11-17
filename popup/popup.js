@@ -42,6 +42,10 @@ function renderCard(job, index, answers) {
   const link = card.querySelector(".card__link");
   if (job.url) link.href = job.url;
   else link.removeAttribute("target");
+  // Remember it was opened, to recognize the application later (lib/applied.js).
+  link.addEventListener("click", () => {
+    if (isExtension) chrome.runtime.sendMessage({ type: "opened-job", jobId: job.id });
+  });
 
   if (job.source) card.querySelector(".card__source").textContent = `via ${job.source}`;
 

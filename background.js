@@ -1,6 +1,7 @@
 import { seedSampleJobs, updateBadge } from "./lib/store.js";
 import { checkForJobs } from "./lib/checker.js";
-import { signIn, savePendingJob, SITE_URL } from "./lib/account.js";
+import { signIn, savePendingJob, SITE_URL, getAccount } from "./lib/account.js";
+import { recordOpenedJob, markAppliedFromPage } from "./lib/applied.js";
 
 const ALARM = "check-jobs";
 
@@ -34,6 +35,16 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   // "Retake Quiz" on the website's Settings page (sent by lib/site-bridge.js).
   if (message?.type === "open-quiz") {
     chrome.tabs.create({ url: chrome.runtime.getURL("quiz/quiz.html?edit") });
+    return;
+  }
+  // A job's link was opened (popup or website): helps match the application later.
+  if (message?.type === "opened-job" && message.jobId) {
+    recordOpenedJob(message.jobId);
+    return;
+  }
+  // An application site showed "application submitted" (lib/apply-detector.js).
+  if (message?.type === "application-submitted") {
+    getAccount().then((account) => account && markAppliedFromPage(message));
     return;
   }
   // "Sign in with Google" in the popup. Runs here because the popup closes
